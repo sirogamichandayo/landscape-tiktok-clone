@@ -1,6 +1,7 @@
 # Landscape TikTok Clone Project
 
 ![image](https://github.com/user-attachments/assets/36dda432-8ba6-44d2-8d8a-fc26ff5fe43d)
+![image](https://github.com/user-attachments/assets/b7aab851-20f8-4fdb-a465-da27b733a46b)
 
 
 
