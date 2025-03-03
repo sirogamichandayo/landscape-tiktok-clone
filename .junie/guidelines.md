@@ -71,6 +71,52 @@ The project follows a modern architecture pattern and is organized as follows:
    npm run build
    ```
 
+5. Firebase Emulator Setup and Usage:
+   ```bash
+   # Initialize Firebase emulators
+   firebase init emulators
+
+   # Start all Firebase emulators
+   firebase emulators:start
+
+   # Start specific emulators
+   firebase emulators:start --only auth,firestore,storage
+
+   # Start emulators with data import/export
+   firebase emulators:start --import=./emulator-data --export-on-exit=./emulator-data
+   ```
+
+   Important emulator ports and URLs:
+   - Authentication: http://localhost:9099
+   - Firestore: http://localhost:8080
+   - Storage: http://localhost:9199
+   - Emulator UI: http://localhost:4000
+
+   Tips for using emulators:
+   - Use the Emulator UI to monitor and manage your Firebase services
+   - Enable emulators in your code by setting the appropriate environment variables
+   - Data persistence: Use --import and --export-on-exit flags to save and restore emulator data
+   - Debug using the Firebase Console in the Emulator UI
+
+   Common troubleshooting:
+   - If ports are already in use, modify them in firebase.json
+   - Ensure your application is configured to use emulators in development
+   - Clear emulator data: firebase emulators:start --clear-data
+
+   Seeding Test Data:
+   ```bash
+   # Populate emulators with test data
+   npm run seed
+   ```
+   The seed command will:
+   - Initialize Firebase emulators
+   - Clear existing test data
+   - Add new test users and videos
+   - Display summary of created data
+
+   Note: Make sure emulators are running before executing the seed command.
+   The command will show the number of users and videos created upon successful completion.
+
 ## Development Guidelines
 ### Code Style
 - Follow consistent code formatting
