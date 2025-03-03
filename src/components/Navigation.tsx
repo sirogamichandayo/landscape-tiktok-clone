@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useAuth } from '../contexts/AuthContext';
+
+const DEFAULT_AVATAR = '/assets/default-avatar.svg';
 
 const Nav = styled.nav`
   position: fixed;
@@ -91,7 +93,12 @@ const UserInfo = styled.div`
   }
 `;
 
-const Avatar = styled.img`
+interface AvatarProps {
+  src?: string | null;
+  alt?: string;
+}
+
+const AvatarImage = styled.img`
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -102,6 +109,18 @@ const Avatar = styled.img`
     height: 28px;
   }
 `;
+
+const Avatar: React.FC<AvatarProps> = ({ src, alt }) => {
+  const [imgError, setImgError] = useState(false);
+
+  return (
+    <AvatarImage
+      src={(!src || imgError) ? DEFAULT_AVATAR : src}
+      alt={alt || 'User avatar'}
+      onError={() => setImgError(true)}
+    />
+  );
+};
 
 const Navigation: React.FC = () => {
   const { currentUser, signInWithGoogle, signOut } = useAuth();
@@ -114,7 +133,7 @@ const Navigation: React.FC = () => {
         {currentUser ? (
           <>
             <UserInfo>
-              <Avatar src={currentUser.photoURL || ''} alt={currentUser.displayName || ''} />
+              <Avatar src={currentUser.photoURL} alt={currentUser.displayName || 'User'} />
               <span>{currentUser.displayName}</span>
             </UserInfo>
             <AuthButton onClick={signOut}>Sign Out</AuthButton>
