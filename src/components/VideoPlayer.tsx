@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
+import { MdFavorite, MdChat, MdShare } from 'react-icons/md';
 
 interface VideoPlayerProps {
   url: string;
@@ -77,7 +78,7 @@ const VideoInfo = styled.div`
 const VideoActions = styled.div`
   position: absolute;
   right: 20px;
-  bottom: 20px;
+  bottom: 100px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -85,11 +86,12 @@ const VideoActions = styled.div`
   z-index: 1;
 
   @media (max-width: 768px) {
-    bottom: 80px;
+    bottom: 140px;
   }
 
   @media (orientation: landscape) and (max-height: 600px) {
     right: 5%;
+    bottom: 80px;
   }
 `;
 
@@ -181,16 +183,18 @@ const ActionButton = styled.button`
   align-items: center;
   gap: 5px;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
 
-  span:first-child {
-    font-size: 24px;
+  .icon {
+    font-size: 28px;
+    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.5));
 
     @media (max-width: 480px) {
-      font-size: 20px;
+      font-size: 24px;
     }
   }
 
-  span:last-child {
+  .count {
     font-size: 14px;
 
     @media (max-width: 480px) {
@@ -200,6 +204,7 @@ const ActionButton = styled.button`
 
   &:hover {
     transform: scale(1.1);
+    color: #FE2C55;
   }
 `;
 
@@ -350,16 +355,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       </VideoInfo>
       <VideoActions>
         <ActionButton>
-          <span>❤️</span>
-          <span>{likes}</span>
+          <MdFavorite className="icon" />
+          <span className="count">{likes}</span>
         </ActionButton>
         <ActionButton>
-          <span>💬</span>
-          <span>{comments}</span>
+          <MdChat className="icon" />
+          <span className="count">{comments}</span>
         </ActionButton>
         <ActionButton>
-          <span>↗️</span>
-          <span>{shares}</span>
+          <MdShare className="icon" />
+          <span className="count">{shares}</span>
         </ActionButton>
       </VideoActions>
       <SeekBarContainer>
