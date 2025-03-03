@@ -1,5 +1,8 @@
 # Landscape TikTok Clone Project
 
+![Uploading image.png…]()
+
+
 ## Project Overview
 This project is a TikTok clone optimized for landscape mode viewing. It aims to provide a better viewing experience for desktop and tablet users.
 
