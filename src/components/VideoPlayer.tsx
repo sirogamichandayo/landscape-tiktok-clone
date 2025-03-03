@@ -101,13 +101,7 @@ const SeekBarContainer = styled.div`
   padding: 30px 20px 20px;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
   z-index: 2;
-  opacity: 0;
-  transition: opacity 0.3s ease;
   pointer-events: auto;
-
-  ${VideoContainer}:hover & {
-    opacity: 1;
-  }
 `;
 
 const SeekBar = styled.div`
