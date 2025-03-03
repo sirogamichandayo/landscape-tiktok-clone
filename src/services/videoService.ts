@@ -5,8 +5,7 @@ import {
   limit,
   getDocs,
   addDoc,
-  serverTimestamp,
-  DocumentData
+  serverTimestamp
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 

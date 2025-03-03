@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import VideoPlayer from './VideoPlayer';
 import LoadingSpinner from './LoadingSpinner';
 import { fetchVideos } from '../services/videoService';
-import { useAuth } from '../contexts/AuthContext';
 import { useVideo } from '../contexts/VideoContext';
 
 const FeedContainer = styled.div`
@@ -48,12 +47,11 @@ const ErrorMessage = styled.div`
 `;
 
 const VideoFeed: React.FC = () => {
-  const { currentUser } = useAuth();
   const { videos, setVideos } = useVideo();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
-  const loadVideos = async () => {
+  const loadVideos = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -65,11 +63,11 @@ const VideoFeed: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [setLoading, setError, setVideos]);
 
   useEffect(() => {
     loadVideos();
-  }, [setVideos]);
+  }, [loadVideos]);
 
   if (loading) {
     return (

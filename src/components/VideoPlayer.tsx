@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 
 interface VideoPlayerProps {
@@ -232,7 +232,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const handleTimeUpdate = () => {
+  const handleTimeUpdate = useCallback(() => {
     if (!isDragging && videoRef.current) {
       const current = videoRef.current.currentTime;
       const total = videoRef.current.duration;
@@ -243,7 +243,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         setDuration(total);
       });
     }
-  };
+  }, [isDragging]);
 
   const calculateSeekPosition = (clientX: number, element: HTMLElement) => {
     const rect = element.getBoundingClientRect();
@@ -257,7 +257,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   };
 
-  const handleDragStart = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleDragStart = () => {
     setIsDragging(true);
     document.addEventListener('mousemove', handleDrag);
     document.addEventListener('mouseup', handleDragEnd);
@@ -325,7 +325,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       videoElement.removeEventListener('timeupdate', handleTimeUpdate);
       videoElement.pause();
     };
-  }, []);
+  }, [handleTimeUpdate]);
 
   const togglePlay = () => {
     if (videoRef.current) {

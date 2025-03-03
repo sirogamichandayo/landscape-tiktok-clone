@@ -36,8 +36,8 @@ export const createTestUsers = async () => {
           userData.password
         );
         createdUsers.push(userCredential.user);
-      } catch (error: any) {
-        if (error.code === 'auth/email-already-in-use') {
+      } catch (error) {
+        if (error && typeof error === 'object' && 'code' in error && error.code === 'auth/email-already-in-use') {
           console.log(`User ${userData.email} already exists`);
         } else {
           throw error;
