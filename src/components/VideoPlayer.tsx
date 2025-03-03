@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import { MdFavorite, MdChat, MdShare } from 'react-icons/md';
+import { MdFavorite, MdChat, MdShare, MdPerson, MdAccountCircle } from 'react-icons/md';
+import { useAuth } from '../contexts/AuthContext';
 
 interface VideoPlayerProps {
   url: string;
@@ -173,6 +174,18 @@ const TimeDisplay = styled.div`
   letter-spacing: 0.5px;
 `;
 
+const ProfileImage = styled.img`
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.5));
+
+  @media (max-width: 480px) {
+    width: 24px;
+    height: 24px;
+  }
+`;
+
 const ActionButton = styled.button`
   background: none;
   border: none;
@@ -216,6 +229,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   comments,
   shares,
 }) => {
+  const { currentUser, signInWithGoogle, signOut } = useAuth();
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -354,15 +368,33 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         <p>{description}</p>
       </VideoInfo>
       <VideoActions>
-        <ActionButton>
+        <ActionButton onClick={(e) => {
+          e.stopPropagation();
+          currentUser ? signOut() : signInWithGoogle();
+        }}>
+          {currentUser ? (
+            currentUser.photoURL ? (
+              <ProfileImage 
+                src={currentUser.photoURL} 
+                alt="Profile"
+              />
+            ) : (
+              <MdAccountCircle className="icon" />
+            )
+          ) : (
+            <MdPerson className="icon" />
+          )}
+          <span className="count">{currentUser ? currentUser.displayName || 'User' : 'Sign In'}</span>
+        </ActionButton>
+        <ActionButton onClick={(e) => e.stopPropagation()}>
           <MdFavorite className="icon" />
           <span className="count">{likes}</span>
         </ActionButton>
-        <ActionButton>
+        <ActionButton onClick={(e) => e.stopPropagation()}>
           <MdChat className="icon" />
           <span className="count">{comments}</span>
         </ActionButton>
-        <ActionButton>
+        <ActionButton onClick={(e) => e.stopPropagation()}>
           <MdShare className="icon" />
           <span className="count">{shares}</span>
         </ActionButton>
