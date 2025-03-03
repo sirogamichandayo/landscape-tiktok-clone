@@ -90,8 +90,8 @@ export const sampleVideos = [
   }
 ];
 
-// Function to prepare test video data
-export const uploadTestVideos = async () => {
+// Function to prepare test video metadata using public sample videos
+export const prepareTestVideos = async () => {
   try {
     const testVideos = sampleVideos.map(video => ({
       url: video.url,
@@ -104,10 +104,10 @@ export const uploadTestVideos = async () => {
       timestamp: new Date()
     }));
 
-    console.log('Test videos prepared with public URLs');
+    console.log('Test video metadata prepared with public URLs');
     return testVideos;
   } catch (error) {
-    console.error('Error preparing test videos:', error);
+    console.error('Error preparing test video metadata:', error);
     throw error;
   }
 };
@@ -118,20 +118,20 @@ export const addTestData = async () => {
     console.log('Creating test users...');
     const users = await createTestUsers();
 
-    // Step 2: Upload test videos
-    console.log('Uploading test videos...');
-    const uploadedVideos = await uploadTestVideos();
+    // Step 2: Prepare test video metadata
+    console.log('Preparing test video metadata...');
+    const testVideos = await prepareTestVideos();
 
     // Step 3: Add video metadata to Firestore
     console.log('Adding video metadata to Firestore...');
     const videosRef = collection(db, 'videos');
-    const addPromises = uploadedVideos.map(video => addDoc(videosRef, video));
+    const addPromises = testVideos.map(video => addDoc(videosRef, video));
     await Promise.all(addPromises);
 
     console.log('All test data added successfully');
     return {
       users,
-      videos: uploadedVideos
+      videos: testVideos
     };
   } catch (error) {
     console.error('Error adding test data:', error);

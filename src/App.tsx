@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import Navigation from './components/Navigation';
 import VideoFeed from './components/VideoFeed';
-import VideoUpload from './components/VideoUpload';
 import { AuthProvider } from './contexts/AuthContext';
 import { VideoProvider } from './contexts/VideoContext';
 import { addTestData } from './utils/testData';
@@ -61,7 +60,6 @@ const App: React.FC = () => {
         <GlobalStyle />
         <Navigation />
         <VideoFeed />
-        <VideoUpload />
       </VideoProvider>
     </AuthProvider>
   );

@@ -40,7 +40,7 @@ const ErrorMessage = styled.div`
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    
+
     &:hover {
       background-color: #FF4D6A;
     }
@@ -106,7 +106,6 @@ const VideoFeed: React.FC = () => {
       {videos.length === 0 && (
         <MessageContainer>
           <div>No videos available</div>
-          {currentUser && <div>Be the first to upload a video!</div>}
         </MessageContainer>
       )}
     </FeedContainer>

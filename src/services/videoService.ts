@@ -8,8 +8,7 @@ import {
   serverTimestamp,
   DocumentData
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../config/firebase';
+import { db } from '../config/firebase';
 
 export interface Video {
   id: string;
@@ -28,7 +27,7 @@ export const fetchVideos = async (limitCount: number = 10): Promise<Video[]> => 
     const videosRef = collection(db, 'videos');
     const q = query(videosRef, orderBy('timestamp', 'desc'), limit(limitCount));
     const querySnapshot = await getDocs(q);
-    
+
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
@@ -40,42 +39,6 @@ export const fetchVideos = async (limitCount: number = 10): Promise<Video[]> => 
   }
 };
 
-export const uploadVideo = async (
-  file: File,
-  description: string,
-  userId: string,
-  username: string
-): Promise<Video | null> => {
-  try {
-    // Upload video file to Firebase Storage
-    const videoRef = ref(storage, `videos/${userId}/${Date.now()}-${file.name}`);
-    await uploadBytes(videoRef, file);
-    const url = await getDownloadURL(videoRef);
-
-    // Add video metadata to Firestore
-    const videoData = {
-      url,
-      description,
-      username,
-      userId,
-      likes: 0,
-      comments: 0,
-      shares: 0,
-      timestamp: serverTimestamp(),
-    };
-
-    const docRef = await addDoc(collection(db, 'videos'), videoData);
-    
-    return {
-      id: docRef.id,
-      ...videoData,
-      timestamp: new Date(),
-    } as Video;
-  } catch (error) {
-    console.error('Error uploading video:', error);
-    return null;
-  }
-};
 
 export const updateVideoStats = async (
   videoId: string,

@@ -314,7 +314,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         });
       },
       {
-        threshold: 0.5 // 50% of the video is visible
+        threshold: 0.5
       }
     );
 
