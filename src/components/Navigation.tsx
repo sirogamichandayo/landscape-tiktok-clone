@@ -111,7 +111,6 @@ const Navigation: React.FC = () => {
       <Logo>TikTok Landscape</Logo>
       <NavActions>
         <NavButton>Home</NavButton>
-        {currentUser && <NavButton>Following</NavButton>}
         {currentUser ? (
           <>
             <UserInfo>
