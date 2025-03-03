@@ -5,13 +5,37 @@ import LoadingSpinner from './LoadingSpinner';
 import { fetchVideos } from '../services/videoService';
 import { useVideo } from '../contexts/VideoContext';
 
-const FeedContainer = styled.div`
+const FeedContainer = styled.div<{ hasVideos: boolean }>`
   width: 100%;
   height: 100vh;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
   background-color: black;
   padding-top: 60px; // Account for navigation bar
+
+  @media (orientation: landscape) {
+    padding-top: 0; // Remove padding in landscape mode since nav is auto-hidden
+  }
+
+  // Scrollbar styling
+  &::-webkit-scrollbar {
+    width: 8px;
+    background-color: transparent;
+    display: ${props => props.hasVideos ? 'block' : 'none'};
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 4px;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  // Firefox scrollbar styling
+  scrollbar-width: ${props => props.hasVideos ? 'thin' : 'none'};
+  scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
 `;
 
 const MessageContainer = styled.div`
@@ -89,7 +113,7 @@ const VideoFeed: React.FC = () => {
   }
 
   return (
-    <FeedContainer>
+    <FeedContainer hasVideos={videos.length > 0}>
       {videos.map((video) => (
         <VideoPlayer
           key={video.id}

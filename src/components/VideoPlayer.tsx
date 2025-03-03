@@ -26,7 +26,7 @@ const VideoContainer = styled.div`
 
   @media (orientation: landscape) and (max-height: 600px) {
     height: 100vh;
-    padding: 0 15%;
+    padding: 0 5%;
   }
 `;
 
@@ -38,7 +38,7 @@ const Video = styled.video`
 
   @media (orientation: landscape) {
     max-width: 100%;
-    max-height: 90vh;
+    max-height: 100vh;
   }
 `;
 
@@ -103,11 +103,10 @@ const SeekBarContainer = styled.div`
   z-index: 2;
   opacity: 0;
   transition: opacity 0.3s ease;
-  pointer-events: none;
+  pointer-events: auto;
 
   ${VideoContainer}:hover & {
     opacity: 1;
-    pointer-events: auto;
   }
 `;
 
@@ -136,7 +135,7 @@ const Progress = styled.div<{ width: string; isDragging?: boolean }>`
   height: 100%;
   background-color: ${props => props.isDragging ? '#ff6666' : '#ff4444'};
   width: ${props => props.width};
-  transition: background-color 0.2s ease;
+  transition: ${props => props.isDragging ? 'none' : 'width 0.1s ease-out, background-color 0.2s ease'};
   border-radius: 2px;
 
   &::after {
@@ -236,12 +235,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (!isDragging && videoRef.current) {
       const current = videoRef.current.currentTime;
       const total = videoRef.current.duration;
-      const progress = (current / total) * 100;
-      requestAnimationFrame(() => {
-        setProgress(progress);
+      if (!isNaN(total) && total > 0) {
+        const newProgress = (current / total) * 100;
+        setProgress(newProgress);
         setCurrentTime(current);
         setDuration(total);
-      });
+      }
     }
   }, [isDragging]);
 
@@ -251,13 +250,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   };
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
     if (videoRef.current) {
       const seekPosition = calculateSeekPosition(e.clientX, e.currentTarget);
-      videoRef.current.currentTime = videoRef.current.duration * seekPosition;
+      const newProgress = seekPosition * 100;
+      const newTime = seekPosition * videoRef.current.duration;
+
+      // Update both progress and video time synchronously
+      setProgress(newProgress);
+      videoRef.current.currentTime = newTime;
     }
   };
 
-  const handleDragStart = () => {
+  const handleDragStart = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
     setIsDragging(true);
     document.addEventListener('mousemove', handleDrag);
     document.addEventListener('mouseup', handleDragEnd);
@@ -267,24 +273,19 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (isDragging && videoRef.current) {
       const seekBar = document.querySelector<HTMLElement>('.seek-bar');
       if (seekBar) {
-        requestAnimationFrame(() => {
-          const seekPosition = calculateSeekPosition(e.clientX, seekBar);
-          setProgress(seekPosition * 100);
-          const newTime = seekPosition * videoRef.current!.duration;
-          videoRef.current!.currentTime = newTime;
-        });
+        const seekPosition = calculateSeekPosition(e.clientX, seekBar);
+        const newProgress = seekPosition * 100;
+        const newTime = seekPosition * videoRef.current.duration;
+
+        // Update both progress and video time synchronously
+        setProgress(newProgress);
+        videoRef.current.currentTime = newTime;
       }
     }
   };
 
   const handleDragEnd = () => {
-    if (isDragging && videoRef.current) {
-      requestAnimationFrame(() => {
-        const newTime = (progress / 100) * videoRef.current.duration;
-        videoRef.current!.currentTime = newTime;
-        setIsDragging(false);
-      });
-    }
+    setIsDragging(false);
     document.removeEventListener('mousemove', handleDrag);
     document.removeEventListener('mouseup', handleDragEnd);
   };

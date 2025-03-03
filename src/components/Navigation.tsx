@@ -18,9 +18,22 @@ const Nav = styled.nav`
   padding: 0 20px;
   z-index: 1000;
   color: white;
+  transition: transform 0.3s ease, opacity 0.3s ease, background-color 0.3s ease;
 
   @media (max-width: 768px) {
     padding: 0 10px;
+  }
+
+  @media (orientation: landscape) {
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.3);
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  &:hover {
+    transform: translateY(0);
+    opacity: 1;
   }
 `;
 
