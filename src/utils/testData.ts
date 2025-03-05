@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, deleteDoc, updateDoc, doc } from 'firebase/firestore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { db, auth } from '../config/firebase';
 
@@ -55,11 +55,17 @@ export const createTestUsers = async () => {
 // Function to clear all test data
 export const clearTestData = async () => {
   try {
+    // Clear videos
     const videosRef = collection(db, 'videos');
-    const querySnapshot = await getDocs(videosRef);
+    const videosSnapshot = await getDocs(videosRef);
+    const videoDeletePromises = videosSnapshot.docs.map(doc => deleteDoc(doc.ref));
+    await Promise.all(videoDeletePromises);
 
-    const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
-    await Promise.all(deletePromises);
+    // Clear comments
+    const commentsRef = collection(db, 'comments');
+    const commentsSnapshot = await getDocs(commentsRef);
+    const commentDeletePromises = commentsSnapshot.docs.map(doc => deleteDoc(doc.ref));
+    await Promise.all(commentDeletePromises);
 
     console.log('All test data cleared successfully');
   } catch (error) {
@@ -71,18 +77,21 @@ export const clearTestData = async () => {
 // Sample videos using public test videos
 export const sampleVideos = [
   {
+    id: 'video1',
     url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     description: '富士山の絶景！🗻 #富士山 #絶景 #日本の風景',
     userId: 'user1',
     username: '田中太郎'
   },
   {
+    id: 'video2',
     url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
     description: '簡単！お家で作る本格パスタ🍝 #料理 #パスタ #クッキング',
     userId: 'user2',
     username: '山田花子'
   },
   {
+    id: 'video3',
     url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
     description: 'Latest Tech Review: The Future of AR 🔮 #tech #AR #review',
     userId: 'user3',
@@ -94,6 +103,7 @@ export const sampleVideos = [
 export const prepareTestVideos = async () => {
   try {
     const testVideos = sampleVideos.map(video => ({
+      videoId: video.id,
       url: video.url,
       description: video.description,
       username: video.username,
@@ -125,13 +135,29 @@ export const addTestData = async () => {
     // Step 3: Add video metadata to Firestore
     console.log('Adding video metadata to Firestore...');
     const videosRef = collection(db, 'videos');
-    const addPromises = testVideos.map(video => addDoc(videosRef, video));
-    await Promise.all(addPromises);
+
+    // Add videos one by one to get their document IDs
+    const addedVideos = [];
+    for (const video of testVideos) {
+      const docRef = await addDoc(videosRef, video);
+      // Create video object with document ID as both id and videoId
+      const videoWithId = { 
+        ...video, 
+        id: docRef.id,
+        videoId: docRef.id 
+      };
+      // Update the Firestore document with its ID
+      await updateDoc(doc(db, 'videos', docRef.id), { 
+        id: docRef.id,
+        videoId: docRef.id 
+      });
+      addedVideos.push(videoWithId);
+    }
 
     console.log('All test data added successfully');
     return {
       users,
-      videos: testVideos
+      videos: addedVideos
     };
   } catch (error) {
     console.error('Error adding test data:', error);

@@ -117,6 +117,7 @@ const VideoFeed: React.FC = () => {
       {videos.map((video) => (
         <VideoPlayer
           key={video.id}
+          id={video.id}
           url={video.url}
           description={video.description}
           username={video.username}

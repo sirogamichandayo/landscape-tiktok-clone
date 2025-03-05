@@ -2,8 +2,11 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { MdFavorite, MdChat, MdShare, MdPerson, MdAccountCircle } from 'react-icons/md';
 import { useAuth } from '../contexts/AuthContext';
+import { subscribeToComments } from '../services/commentService';
+import CommentSection from './CommentSection';
 
 interface VideoPlayerProps {
+  id: string;
   url: string;
   description: string;
   username: string;
@@ -222,11 +225,12 @@ const ActionButton = styled.button`
 `;
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
+  id,
   url,
   description,
   username,
   likes,
-  comments,
+  comments: initialComments,
   shares,
 }) => {
   const { currentUser, signInWithGoogle, signOut } = useAuth();
@@ -237,6 +241,18 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
+  const [commentCount, setCommentCount] = useState(initialComments);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const unsubscribe = subscribeToComments(id, (comments) => {
+      setCommentCount(comments.length);
+    });
+
+    return () => unsubscribe();
+  }, [id]);
 
   const formatTime = (timeInSeconds: number): string => {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -390,9 +406,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           <MdFavorite className="icon" />
           <span className="count">{likes}</span>
         </ActionButton>
-        <ActionButton onClick={(e) => e.stopPropagation()}>
+        <ActionButton 
+          data-testid="comment-button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsCommentSectionOpen(true);
+          }}
+        >
           <MdChat className="icon" />
-          <span className="count">{comments}</span>
+          <span className="count">{commentCount}</span>
         </ActionButton>
         <ActionButton onClick={(e) => e.stopPropagation()}>
           <MdShare className="icon" />
@@ -413,6 +435,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           {formatTime(currentTime)} / {formatTime(duration)}
         </TimeDisplay>
       </SeekBarContainer>
+      <CommentSection 
+        isOpen={isCommentSectionOpen}
+        onClose={() => setIsCommentSectionOpen(false)}
+        videoId={id}
+      />
     </VideoContainer>
   );
 };

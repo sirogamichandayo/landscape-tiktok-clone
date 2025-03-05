@@ -20,7 +20,14 @@ const seedTestData = async () => {
     console.log('Test data seeding completed successfully');
     console.log('Users created:', result.users.length);
     console.log('Videos added:', result.videos.length);
-    console.log('Sample video:', result.videos[0]);
+    console.log('Sample video details:');
+    result.videos.forEach((video, index) => {
+      console.log(`Video ${index + 1}:`);
+      console.log('  id:', video.id);
+      console.log('  videoId:', video.videoId);
+      console.log('  url:', video.url);
+      console.log('  username:', video.username);
+    });
 
   } catch (error) {
     console.error('Error seeding test data:', error);
